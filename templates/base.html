@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,13 +9,13 @@
   <script src="https://unpkg.com/htmx.org@1.8.4"></script>
 
   <!-- Tailwind CSS (CDN) -->
-  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="{% static "css/output.css"%}" rel="stylesheet" />
 
   {% block head_extras %}
   <!-- Aici poți adăuga extra <script>/<link> doar pentru anumite pagini, dacă vrei -->
   {% endblock head_extras %}
 </head>
-<body class="bg-green-100 p-8">
+<body class="bg-green-900 p-8">
 
   <!-- Aici e conținutul principal care variază de la pagină la pagină -->
   {% block content %}
