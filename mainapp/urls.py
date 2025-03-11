@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
+from .views import chatgpt_view
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', chatgpt_view, name='chat')
 ]
