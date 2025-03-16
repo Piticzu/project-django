@@ -1,24 +1,36 @@
+# views.py
+import openai
+import os
+import json
+from django.http import HttpResponse
 from django.shortcuts import render
-from django.conf import settings
+from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.csrf import csrf_exempt
 from openai import OpenAI
 
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
+@require_GET
+def index_view(request):
+    return render(request, "index.html")
 
-def chatgpt_view(request):
-    context = {}
+@csrf_exempt
+@require_POST
+def send_message_view(request):
+    user_message = request.POST.get('message', '')
 
-    if request.htmx or request.method == 'POST':
-        prompt = request.POST.get('prompt')
+    client = OpenAI()
+    # Get OpenAI response
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": user_message}
+        ],
+    )
 
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            print(response)
-            context['response'] = response.choices[0].message.content
-        except Exception as e:
-            context['error'] = str(e)
-
-    return render(request, 'chat.html', context)
+    # Create response HTML
+    bot_response = completion.choices[0].message.content
+    return HttpResponse(f"""
+        <div class="message user-message">{user_message}</div>
+        <div class="message bot-message">{bot_response}</div>
+    """)

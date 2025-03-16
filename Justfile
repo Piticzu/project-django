@@ -11,7 +11,7 @@ run *args:
     (sleep 2 && py -m webbrowser http://localhost:8000) &
 
     # Start the Tailwind CSS CLI
-    just tailwindcss
+    just tailwindcss &
 
     # Wait for all processes to finish
     wait
@@ -21,7 +21,7 @@ createsuperuser:
 
 # Run TailwindCSS CLI in watch mode
 tailwindcss: download-tailwindcss
-    ./tailwindcss.exe -i ./static/css/input.css -o ./static/css/output.css --watch --minify
+    ./tailwindcss.exe -i ./static/css/input.css -o ./static/css/output.css --watch=always --minify
 
 # Download TailwindCSS's Standalone CLI binary for Windows
 download-tailwindcss:

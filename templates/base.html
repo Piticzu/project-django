@@ -6,20 +6,15 @@
   <title>{% block title %}Site Title{% endblock title %}</title>
 
   <!-- HTMX (CDN) -->
-  <script src="https://unpkg.com/htmx.org@1.8.4"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
 
   <!-- Tailwind CSS (CDN) -->
-    <link href="{% static "css/output.css"%}" rel="stylesheet" />
-
-  {% block head_extras %}
-  <!-- Aici poți adăuga extra <script>/<link> doar pentru anumite pagini, dacă vrei -->
-  {% endblock head_extras %}
+  <link href="{% static "css/output.css"%}" rel="stylesheet" />
 </head>
-<body class="bg-green-900 p-8">
+<body class="flex flex-col p-8 text-neutral-300 bg-neutral-900 min-h-screen">
 
-  <!-- Aici e conținutul principal care variază de la pagină la pagină -->
   {% block content %}
-  <h1 class="text-3xl font-bold mb-4">Bun venit!</h1>
+    {# Aici e conținutul principal care variază de la pagină la pagină #}
   {% endblock content %}
 
 </body>
