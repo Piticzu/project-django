@@ -2,55 +2,29 @@
 {% load static %}
 
 {% block content %}
-    <div id="chat-page-container" class="flex-1 flex flex-col items-center justify-center size-full">
+<div id="chat-page-container" class="flex-1 flex flex-col items-center justify-center size-full">
 
-        <div id="chat-container-wrapper" class="relative w-full max-w-3xl size-full flex-1">
+    <div id="chat-container-wrapper" class="relative w-full max-w-3xl size-full flex-1">
         <div id="chat-container" class="absolute inset-0 flex flex-col gap-8 bg-neutral-900 rounded-t-3xl px-4 py-8 overflow-scroll no-scrollbar">
-            <div id="assistant-message-1" class="whitespace-pre-wrap">
-Sure! Let’s dive deeper into the fascinating biology of octopuses.
-
-Octopuses Have Three Hearts and Blue Blood—Why?
-Octopuses are part of the cephalopod class, a group of marine mollusks that also includes squids, cuttlefish, and nautiluses. Their physiology is incredibly unique, with features that set them apart from almost all other creatures in the animal kingdom.
-            </div>
-            <div id="user-message-1" class="bg-neutral-800 rounded-l-full rounded-t-full py-3 px-5 max-w-xs w-fit ms-auto">
-                It's over Anakin,
-            </div>
-            <div id="assistant-message-1" class="whitespace-pre-wrap">
-Sure! Let’s dive deeper into the fascinating biology of octopuses.
-
-Octopuses Have Three Hearts and Blue Blood—Why?
-Octopuses are part of the cephalopod class, a group of marine mollusks that also includes squids, cuttlefish, and nautiluses. Their physiology is incredibly unique, with features that set them apart from almost all other creatures in the animal kingdom.
-            </div>
-            <div id="user-message-1" class="bg-neutral-800 rounded-l-full rounded-t-full py-3 px-5 max-w-xs w-fit ms-auto">
-                It's over Anakin,
-            </div>
-            <div id="assistant-message-1" class="whitespace-pre-wrap">
-Sure! Let’s dive deeper into the fascinating biology of octopuses.
-
-Octopuses Have Three Hearts and Blue Blood—Why?
-Octopuses are part of the cephalopod class, a group of marine mollusks that also includes squids, cuttlefish, and nautiluses. Their physiology is incredibly unique, with features that set them apart from almost all other creatures in the animal kingdom.
-            </div>
-
-            <div id="user-message-1" class="bg-neutral-800 rounded-l-full rounded-t-full py-3 px-5 max-w-xs w-fit ms-auto">
-                It's over Anakin,
-            </div>
-            <div id="assistant-message-1" class="whitespace-pre-wrap">
-Sure! Let’s dive deeper into the fascinating biology of octopuses.
-
-Octopuses Have Three Hearts and Blue Blood—Why?
-Octopuses are part of the cephalopod class, a group of marine mollusks that also includes squids, cuttlefish, and nautiluses. Their physiology is incredibly unique, with features that set them apart from almost all other creatures in the animal kingdom.
-            </div>
-
-            <div id="user-message-1" class="bg-neutral-800 rounded-l-full rounded-t-full py-3 px-5 max-w-xs w-fit ms-auto">
-                It's over Anakin,
-            </div>
+            <div id="scroll-anchor" hx-trigger="revealed" hx-get="/scroll-anchor/" hx-swap="none"></div>
         </div>
-        </div>
-
-        <input type="text"
-               placeholder="Ask me anything."
-               class="border bg-neutral-800 border-neutral-700 hover:border-neutral-600 focus:border-neutral-400 transition duration-300 outline-none rounded-3xl w-full max-w-3xl py-4 px-6"
-               required
-        >
     </div>
+
+    <form
+        hx-post="/send/"
+        hx-target="#chat-container"
+        hx-swap="beforeend"
+        class="w-full max-w-3xl mt-4"
+    >
+        <input
+            name="message"
+            type="text"
+            placeholder="Ask me anything."
+            class="border bg-neutral-800 border-neutral-700 hover:border-neutral-600 focus:border-neutral-400 transition duration-300 outline-none rounded-3xl w-full py-4 px-6"
+            required
+        >
+    <button type="submit" class="hidden"></button>
+    </form>
+
+</div>
 {% endblock %}

@@ -1,13 +1,12 @@
 # views.py
-import openai
-import os
-import json
+from .utils import call_gpt
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt
-from openai import OpenAI
 
+def scroll_anchor_view(request):
+    return HttpResponse()
 
 @require_GET
 def index_view(request):
@@ -17,20 +16,21 @@ def index_view(request):
 @require_POST
 def send_message_view(request):
     user_message = request.POST.get('message', '')
+    bot_response = call_gpt(user_message)
 
-    client = OpenAI()
-    # Get OpenAI response
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": user_message}
-        ],
-    )
-
-    # Create response HTML
-    bot_response = completion.choices[0].message.content
     return HttpResponse(f"""
-        <div class="message user-message">{user_message}</div>
-        <div class="message bot-message">{bot_response}</div>
+        <div class="flex justify-end">
+            <div class="bg-neutral-700 text-white px-4 py-2 rounded-l-full rounded-tr-full max-w-xs">
+                {user_message}
+            </div>
+        </div>
+        <div class="text-left text-white">{bot_response}</div>
+
+        <script>
+            const form = document.querySelector('form');
+            if (form) {{
+                form.reset();
+                form.querySelector('input[name=message]').focus();
+            }}
+        </script>
     """)
