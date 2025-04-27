@@ -6,14 +6,30 @@
 
     <div id="chat-container-wrapper" class="relative w-full max-w-3xl size-full flex-1">
         <div id="chat-container" class="absolute inset-0 flex flex-col gap-8 bg-neutral-900 rounded-t-3xl px-4 py-8 overflow-scroll no-scrollbar">
-            <div id="scroll-anchor" hx-trigger="revealed" hx-get="/scroll-anchor/" hx-swap="none"></div>
+            {% for message in chat_history %}
+                {% if message.role == "user" %}
+                    <div class="flex justify-end mb-4">
+                        <div class="bg-neutral-700 text-white px-4 py-2 rounded-l-full rounded-tr-full max-w-xs">
+                            {{ message.content }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex justify-start mb-8 gap-4">
+                        <div class="text-left text px-4 py-2">
+                            {{ message.content }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
+
 
     <form
         hx-post="/send/"
         hx-target="#chat-container"
-        hx-swap="beforeend"
+        hx-swap="beforeend settle:50ms scroll:#chat-container:bottom"
+        hx-on::after-request="this.reset(); this.querySelector('input[name=message]').focus();"
         class="w-full max-w-3xl mt-4"
     >
         <input
