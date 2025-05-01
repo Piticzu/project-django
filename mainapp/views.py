@@ -9,7 +9,11 @@ from django.views.decorators.csrf import csrf_exempt
 @require_GET
 def index_view(request):
     chat_history = request.session.get('chat_history', [])
-    return render(request, "index.html", {'chat_history': chat_history})
+    has_chat = len(chat_history) > 0
+    return render(request, "index.html", {
+        'chat_history': chat_history,
+        'has_chat': has_chat
+    })
 
 @csrf_exempt
 @require_POST
@@ -50,3 +54,11 @@ def bot_response_view(request):
     })
 
     return HttpResponse(html)
+
+@csrf_exempt
+@require_POST
+def clear_chat_view(request):
+    request.session['chat_history'] = []
+    request.session.modified = True
+    return HttpResponse("")
+
