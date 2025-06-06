@@ -2,55 +2,66 @@
 {% load static %}
 
 {% block content %}
-<div id="chat-page-container" class="flex-1 flex flex-col items-center justify-center size-full">
+    <div id="chat-page-container" class="group flex-1 flex flex-col items-center justify-center size-full">
+        <div id="chat-container-wrapper" class="relative w-full max-w-3xl size-full flex-1">
+            <div id="chat-container" class="absolute inset-0 flex flex-col gap-4 bg-neutral-900 rounded-t-3xl px-4 py-8 overflow-scroll no-scrollbar"
+                 hx-on:load="this.scrollTop = this.scrollHeight"
+            >
+                {% for message in chat_history %}
+                    {% if message.role == "user" %}
+                        {% include "partials/user_message.html" with content=message.content %}
+                    {% else %}
+                        {% include "partials/bot_message.html" with content=message.content %}
+                    {% endif %}
+                {% endfor %}
 
-    <div id="chat-container-wrapper" class="relative w-full max-w-3xl size-full flex-1">
-        <div id="chat-container" class="absolute inset-0 flex flex-col gap-8 bg-neutral-900 rounded-t-3xl px-4 py-8 overflow-scroll no-scrollbar">
-            {% for message in chat_history %}
-                {% if message.role == "user" %}
-                    <div class="flex justify-end mb-4">
-                        <div class="bg-neutral-700 text-white px-4 py-2 rounded-l-full rounded-tr-full max-w-xs">
-                            {{ message.content }}
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="flex justify-start mb-8 gap-4">
-                        <div class="text-left text px-4 py-2">
-                            {{ message.content }}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
+                <div
+                        id="typing-indicator"
+                        class="italic text-neutral-400 px-2 hidden [&.htmx-request]:block order-last"
+                >
+                    Assistant is typing...
+                </div>
+            </div>
         </div>
     </div>
 
+    <div class="w-full justify-center px-4 mt-4 max-w-3xl mx-auto">
+        <div id="chat-form-container">
+            <form
+                    hx-post="/send/"
+                    hx-target="#chat-container"
+                    hx-swap="beforeend settle:50ms scroll:#chat-container:bottom"
+                    class="w-full max-w-3xl mt-4 relative"
+                    hx-on:submit="this.reset()"
+            >
+                <input
+                        name="message"
+                        type="text"
+                        placeholder="Ask me anything."
+                        class="w-full border bg-neutral-800 border-neutral-700 hover:border-neutral-600 focus:border-neutral-400 transition duration-300 outline-none rounded-3xl py-4 px-6 pr-32"
+                        required
+                >
+                <button
+                        type="button"
+                        hx-post="/clear-chat/"
+                        hx-target="#chat-container"
+                        hx-swap="innerHTML"
+                        class="group-has-[.chat-message]:hidden absolute right-2 top-1/2 -translate-y-1/2 bg-neutral-600 hover:bg-neutral-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap"
+                >
+                    Clear Chat
+                </button>
+            </form>
 
-    <form
-        hx-post="/send/"
-        hx-target="#chat-container"
-        hx-swap="beforeend settle:50ms scroll:#chat-container:bottom"
-        hx-on::after-request="this.reset(); this.querySelector('input[name=message]').focus();"
-        class="w-full max-w-3xl mt-4 relative"
-    >
-        <input
-            name="message"
-            type="text"
-            placeholder="Ask me anything."
-            class="w-full border bg-neutral-800 border-neutral-700 hover:border-neutral-600 focus:border-neutral-400 transition duration-300 outline-none rounded-3xl py-4 px-6 pr-32"
-            required
-        >
-    {% if has_chat %}
-        <button
-            type="button"
-            hx-post="/clear-chat/"
-            hx-target="#chat-container"
-            hx-swap="innerHTML"
-            class="absolute right-2 top-1/2 -translate-y-1/2 bg-neutral-600 hover:bg-neutral-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap"
-        >
-            Clear Chat
-        </button>
-    {% endif %}
-    </form>
-
-</div>
+            <div
+                    id="trigger-bot-response"
+                    class="text-left text-white"
+                    hx-get="/bot-response/"
+                    hx-target="#chat-container"
+                    hx-swap="beforeend scroll:#chat-container:bottom"
+                    hx-trigger="generateBotResponse from:body"
+                    hx-indicator="#typing-indicator"
+            >
+            </div>
+        </div>
+    </div>
 {% endblock %}

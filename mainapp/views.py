@@ -1,10 +1,12 @@
 # views.py
-from .utils import call_gpt
+from openai import OpenAI
+
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt
+from django.template.defaultfilters import linebreaksbr
 
 @require_GET
 def index_view(request):
@@ -29,36 +31,54 @@ def send_message_view(request):
     })
     request.session.modified  = True
 
-    html = render_to_string('user_message_block.html', {
-        'user_message': user_message,
+    html = render_to_string('partials/user_message.html', {
+        'content': user_message,
         'hash' : hash(user_message)
     })
 
-    return HttpResponse(html)
+    response = HttpResponse(html)
+    response.headers['HX-Trigger'] = "generateBotResponse"
+
+    return response
+
+
 @require_GET
 def bot_response_view(request):
-    user_message = request.GET.get('message', '')
-    bot_response = call_gpt(user_message)
+    client = OpenAI()
 
-    if 'chat_history' not in request.session:
-        request.session['chat_history'] = []
+    # Continue chat history
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=request.session['chat_history'],
+    )
 
+    # Add response to chat history
     request.session['chat_history'].append({
         'role': 'assistant',
-        'content' : bot_response
+        'content' : response.choices[0].message.content
     })
+
     request.session.modified  = True
 
-    html = render_to_string('bot_response_block.html', {
-        'bot_response': bot_response
+    html = render_to_string('partials/bot_message.html', {
+        'content': linebreaksbr(request.session['chat_history'][-1]['content']),
     })
 
     return HttpResponse(html)
+
 
 @csrf_exempt
 @require_POST
 def clear_chat_view(request):
     request.session['chat_history'] = []
     request.session.modified = True
-    return HttpResponse("")
+    html = """
+    <div
+    id="typing-indicator"
+    class="italic text-neutral-400 px-2 hidden [&.htmx-request]:block order-last"
+    >
+    Assistant is typing...
+    </div>
+    """
 
+    return HttpResponse(html)

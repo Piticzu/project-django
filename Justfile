@@ -8,7 +8,7 @@ run *args:
     py manage.py runserver &
 
     # Open the browser (after 4s)
-    (sleep 2 && py -m webbrowser http://localhost:8000) &
+    (sleep 2 && py -m webbrowser http://127.0.0.1:8000/) &
 
     # Start the Tailwind CSS CLI
     just tailwindcss &
@@ -37,7 +37,7 @@ download-tailwindcss:
     [ -f "./tailwindcss.exe" ] && echo "TailwindCSS Standalone CLI is already downloaded." && exit 0
 
     # Set TailwindCSS version and base URL
-    TAILWIND_VERSION="4.0.9"
+    TAILWIND_VERSION="4.1.7"
     BASE_URL="https://github.com/tailwindlabs/tailwindcss/releases/download/v${TAILWIND_VERSION}"
 
     # Determine architecture for Windows
